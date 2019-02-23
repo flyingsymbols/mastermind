@@ -1,6 +1,6 @@
 from columnize import columnize
 
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 
 COLORS = [
     'W', # white
@@ -84,6 +84,14 @@ def count_consistent(answers):
         c += 1
     return c
 
+def next_partitions(answers, i):
+    """
+    The idea behind this is to, for a given set of answers, and a potential next guess i,
+    return the partitions {(red, white): set(nums)}
+    """
+    parts = {}
+    for num in yield_consistent(answers):
+        res = match(i, num)
 
 def main():
     for i in range(1, len(ANSWERS) + 1):
