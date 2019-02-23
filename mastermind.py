@@ -1,3 +1,5 @@
+from columnize import columnize
+
 from collections import namedtuple
 
 COLORS = [
@@ -84,7 +86,7 @@ def count_consistent(answers):
 
 
 def main():
-    for i in range(1, len(ANSWERS)):
+    for i in range(1, len(ANSWERS) + 1):
         answers = ANSWERS[:i]
         possible = count_consistent(answers)
         print('After {}, {}/{} possible'.format(
@@ -93,12 +95,12 @@ def main():
             6**4
         ))
 
-        if possible < 20:
+        if possible < 100:
             color_list = [
                 num_to_colors(val) 
                 for val in yield_consistent(answers)
             ]
-            print(color_list)
+            print(columnize(color_list, displaywidth=80))
 
 
 
