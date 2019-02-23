@@ -17,14 +17,14 @@ def color_inds(i):
 
 def colors_to_num(color_list):
     i = 0
-    for c in reversed(color_list):
+    for c in color_list:
         i = i * 6 + COLOR_INDS[c]
     return i
 
 def num_to_colors(i):
     s = ''
     for x in color_inds(i):
-        s += COLORS[x]
+        s = COLORS[x] + s
     return s
 
 def match(i, j):
