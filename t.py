@@ -19,6 +19,7 @@ def colors_to_num(color_list):
     i = 0
     for c in reversed(color_list):
         i = i * 6 + COLOR_INDS[c]
+    return i
 
 def colors(i):
     for x in color_inds(i):
@@ -52,32 +53,38 @@ def match(i, j):
 Answer = namedtuple('Answer', ['guess', 'result'])
 
 ANSWERS = [
-    Answer('OOGP', (0,1)),
-    Answer('RYWW', (1,2)),
-    Answer('PRPR', (1,0)),
-    Answer('GRYW', (1,1)),
-    Answer('WRWO', (0,2)),
-    Answer('YWPW', (4,0))
+    Answer(colors_to_num('OOGP'), (0,1)),
+    Answer(colors_to_num('RYWW'), (1,2)),
+    Answer(colors_to_num('PRPR'), (1,0)),
+    Answer(colors_to_num('GRYW'), (1,1)),
+    Answer(colors_to_num('WRWO'), (0,2)),
+    Answer(colors_to_num('YWPW'), (4,0))
 ]
 
 def consistent(i, answer):
-    return match(i, answer.guess) == match.result
+    return match(i, answer.guess) == answer.result
 
-def count_consistent(answers):
-    count = 0
+def yield_consistent(answers):
     for i in range(6**4):
         if all(consistent(i, answer) for answer in answers):
-            count += 1
-    return count
+            yield i
+
+def count_consistent(answers):
+    c = 0
+    for _ in yield_consistent(answers):
+        c += 1
+    return c
+
 
 def main():
-    for i in range(6**4):
-        if (i % 100) == 0:
-            red, white = match(i, 1111)
-            print('{}: {} match against {} = r:{} w:{}'.format(
-                i, ':'.join(colors(i)),
-                ':'.join(colors(1111)), red, white
-            ))
+    for i in range(1, len(ANSWERS)):
+        answers = ANSWERS[:i]
+        possible = count_consistent(answers)
+        print('After {}, {}/{} possible'.format(
+            answers,
+            possible,
+            6**4
+        ))
 
 if __name__ == '__main__':
     main()
