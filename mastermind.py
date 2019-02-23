@@ -52,7 +52,12 @@ def match(i, j):
 
     return (red_count, white_count)
 
-Answer = namedtuple('Answer', ['guess', 'result'])
+class Answer(namedtuple('Answer', ['guess', 'result'])):
+    def __repr__(self):
+        return '{}({},{})'.format(
+            num_to_colors(self.guess), 
+            self.result[0], self.result[1]
+        )
 
 ANSWERS = [
     Answer(colors_to_num('OOGP'), (0,1)),
@@ -87,6 +92,15 @@ def main():
             possible,
             6**4
         ))
+
+        if possible < 20:
+            color_list = [
+                num_to_colors(val) 
+                for val in yield_consistent(answers)
+            ]
+            print(color_list)
+
+
 
 if __name__ == '__main__':
     main()
