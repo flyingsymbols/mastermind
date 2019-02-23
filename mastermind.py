@@ -21,9 +21,11 @@ def colors_to_num(color_list):
         i = i * 6 + COLOR_INDS[c]
     return i
 
-def colors(i):
+def num_to_colors(i):
+    s = ''
     for x in color_inds(i):
-        yield COLORS[x]
+        s += COLORS[x]
+    return s
 
 def match(i, j):
     """
