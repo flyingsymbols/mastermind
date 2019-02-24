@@ -3,6 +3,64 @@ from collections import namedtuple, defaultdict
 
 from columnize import columnize
 
+# I want to figure out a way to make the following operation more efficient:
+# Given: [Answers] ~ set(ValidGuess), NextGuess return
+# { Result : set(ValidGuess) }
+# 
+# MM(4,6), mastermind with 4 peg locations and 6 colors:
+# num_guesses: there are 6**4 or 1296 guess possibilities at the start
+# num_results: there are the following results :
+# 0,0 0,1 0,2 0,3 0,4
+# 1,0 1,1 1,2 1,3
+# 2,0 2,1 2,2
+# 3,0 
+# 4,0
+# This is the same as T(n+1) - 1, where T() is the triangular numbers
+# (the -1 is because if all the colors are right, and the positions
+#  are right for every other peg, then the position must be right for the
+#  last peg, so 3,1 is impossible)
+# For 4 pegs, this is T(4+1) - 1 = T(5) - 1 = (5 * (5 + 1))/2 - 1 = 5*6/2 - 1 = 15 - 1 = 14
+
+# The total number of pairs of colors, if we wanted to store a result matrix, would be (because symmetric, we can without loss of generality
+# assume that a <= b
+# T(num_guesses) = 840456
+# if we pack results to 4 bits (enough for the 14 possibilities), we get 420 KB for a result table.
+
+# what is the expected size of the following data structure:
+# {result: [(a,b)]} where a <= b ?
+# Every (a,b) would be there, which is 840456. We could store 3 pairs of a,b in 8 bytes = 2.2 MB packed that way
+# I think this data structure would be more useful in later rounds
+
+# Let's just think of it like abstract datastructures
+# 
+# Arrangement	= A configuration of pegs
+# Match			= A (red, white) response comparing two Arrangements (typically a guess and the secret Arrangement)
+# Round			= Arrangement x Match
+# GameState = [Round]
+#  - correlated information: set(Arrangement) of remaining valid guesses
+# We want a function
+# partition(GameState, Arrangement) that returns {Match: set(Arrangement)} ({} when the arrangement is impossible)
+#
+# GameTree = Arrangement x [Match x GameTree] | Solved
+#  - also correlated is a count of options at each node	
+#
+# given a metric, we should be able to construct a GameTree
+# 
+# representation: 
+#	Arrangement ~ int [0, 1296) (11 bits)
+#   Match ~ int red*5 + white = 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 15, 20 (5 bits)
+#	Round ~ int (Arrangement | Match << 11) (16 bits)
+#	GameState = class
+#   GameTree = class
+
+class Arrangement:
+	@classmethod
+	def from_str(cls, s):
+		i = 0
+		for c in s:
+			i = i * 6 + COLOR_INDS[c]
+		return i
+
 COLORS = [
     'W', # white
     'R', # red/pink
